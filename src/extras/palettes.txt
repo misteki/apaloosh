@@ -1,0 +1,5 @@
+TESTED PALETTES:
+
+TAFFY 16
+222533ffab7bffeb33f58931a63d57ff6c7adc435b36354da3c0e66275ba448de73f48c2a7f5472bdb72db4b3dfafffc
+Too dark backgorund, too striking main colors. A little jarring.
