@@ -12,17 +12,18 @@ const init: () => void = () => {
         create_actor(38, 20, 276),
     ];
 
-    // Camera
-    const camera = { x: (pc.map_x - 15) * TILE_SIZE, y: (pc.map_y - 7) * TILE_SIZE };
-
     //Create map
     const tileset = create_tileset();
 
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
 
     add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 11, 12]);
-    const map = create_tilemap(0, 0, 32, 18, tileset);
+    const map = create_tilemap(0, 0, 31, 17, tileset);
     const pc_moved = false;
+
+    // Camera
+    const camera = create_camera(pc.map_x, pc.map_y, 31, 17, 15, 7);
+
     return {
         pc, npcs, camera, map, pc_moved
     }
@@ -50,6 +51,9 @@ function TIC() {
 
     // -------------------- LOGIC -------------------- 
     update_pc(pc, $dt, state);
+    if (state.pc_moved) {
+        update_camera_fov(state.camera);
+    }
     npcs.forEach((npc) => {
         if (state.pc_moved) {
             step_npc(npc, $dt, state);

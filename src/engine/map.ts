@@ -31,8 +31,15 @@ const create_tileset = () => {
 
 /* TILEMAP */
 
-const draw_tilemap = (tilemap, camera = { x: 0, y: 0 }) => {
-    map(Math.floor(camera.x / TILE_SIZE), Math.floor(camera.y / TILE_SIZE), tilemap.width + 1, tilemap.height + 1, tilemap.x - (camera.x % TILE_SIZE), tilemap.y - (camera.y % TILE_SIZE), 0, 1);
+const draw_tilemap = (tilemap, camera = { x: 0, y: 0, fov_map: null }) => {
+    const map_x = Math.floor(camera.x / TILE_SIZE);
+    const map_y = Math.floor(camera.y / TILE_SIZE);
+    map(map_x, map_y, tilemap.width + 1, tilemap.height + 1, tilemap.x - (camera.x % TILE_SIZE), tilemap.y - (camera.y % TILE_SIZE), 0, 1, (tile_id, x, y) => {
+        if (camera.fov_map) {
+            return camera.fov_map[x - map_x][y - map_y] ? tile_id : 0;
+        }
+        return tile_id;
+    });
 };
 
 // Get tile at pixel coordinates
@@ -42,7 +49,7 @@ const get_tile = (tilemap, map_x, map_y) => {
     return create_tile(tile_id, flags);
 }
 
-const create_tilemap = (x, y, width, height, tileset, remap?) => ({
+const create_tilemap = (x, y, width, height, tileset, remap = null) => ({
     x,
     y,
     width,
