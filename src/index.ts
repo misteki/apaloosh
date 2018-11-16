@@ -17,12 +17,12 @@ const init: () => void = () => {
 
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
 
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 11, 12]);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 11, 12, 6, 7, 8, 22, 23, 24, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
     const map = create_tilemap(0, 0, 31, 17, tileset);
     const pc_moved = false;
 
     // Camera
-    const camera = create_camera(pc.map_x, pc.map_y, 31, 17, 15, 7);
+    const camera = create_camera(pc.map_x, pc.map_y, 31, 17, 15, 7, map);
 
     return {
         pc, npcs, camera, map, pc_moved
@@ -52,8 +52,9 @@ function TIC() {
     // -------------------- LOGIC -------------------- 
     update_pc(pc, $dt, state);
     if (state.pc_moved) {
-        update_camera_fov(state.camera);
+        update_camera_fov(state.camera, state.map);
     }
+
     npcs.forEach((npc) => {
         if (state.pc_moved) {
             step_npc(npc, $dt, state);
@@ -65,6 +66,29 @@ function TIC() {
     cls(0);
     const { map, camera } = state;
     draw_tilemap(map, camera);
+
+    //FoV shadow
+    /*
+    const { fov_map } = camera;
+    if (fov_map) {
+        fov_map.forEach((row, row_index) => {
+            row.forEach((cell, column_index) => {
+                if (cell && !fov_map[row_index - 1][column_index]) {
+                    spr(475, (TILE_SIZE * row_index), TILE_SIZE * column_index, 1);
+                }
+                if (cell && !fov_map[row_index + 1][column_index]) {
+                    spr(477, TILE_SIZE * row_index, TILE_SIZE * column_index, 1);
+                }
+                if (cell && !fov_map[row_index][column_index + 1]) {
+                    spr(492, TILE_SIZE * row_index, TILE_SIZE * column_index, 1);
+                }
+                if (cell && !fov_map[row_index][column_index - 1]) {
+                    spr(460, TILE_SIZE * row_index, TILE_SIZE * column_index, 1);
+                }
+            })
+        })
+    }
+    */
 
     // Actors
     [...npcs, pc].forEach((actor) => draw_actor(actor, camera));

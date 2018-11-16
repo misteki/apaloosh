@@ -36,7 +36,7 @@ const draw_tilemap = (tilemap, camera = { x: 0, y: 0, fov_map: null }) => {
     const map_y = Math.floor(camera.y / TILE_SIZE);
     map(map_x, map_y, tilemap.width + 1, tilemap.height + 1, tilemap.x - (camera.x % TILE_SIZE), tilemap.y - (camera.y % TILE_SIZE), 0, 1, (tile_id, x, y) => {
         if (camera.fov_map) {
-            return camera.fov_map[x - map_x][y - map_y] ? tile_id : 0;
+            return camera.fov_map[x][y] ? tile_id : 0;
         }
         return tile_id;
     });

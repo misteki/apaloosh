@@ -35,11 +35,13 @@ const update_pc = (pc, dt, state) => {
     }
     // Tween
     const speed = Math.round(dt * 50);
-    if (pc.x !== pc.map_x * TILE_SIZE) {
+    const arrived_x = pc.x === pc.map_x * TILE_SIZE;
+    const arrived_y = pc.y === pc.map_y * TILE_SIZE;
+    if (!arrived_x) {
         camera.x = (pc.map_x * TILE_SIZE) - pc.x > 0 ? camera.x + speed : camera.x - speed;
         pc.x = (pc.map_x * TILE_SIZE) - pc.x > 0 ? pc.x + speed : pc.x - speed;
     }
-    if (pc.y !== pc.map_y * TILE_SIZE) {
+    if (!arrived_y) {
         camera.y = (pc.map_y * TILE_SIZE) - pc.y > 0 ? camera.y + speed : camera.y - speed;
         pc.y = (pc.map_y * TILE_SIZE) - pc.y > 0 ? pc.y + speed : pc.y - speed;
     }
