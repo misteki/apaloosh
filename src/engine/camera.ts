@@ -13,34 +13,35 @@ const create_camera = (init_x, init_y, width, height, center_x, center_y, map) =
         fov_map: get_fov_map(map, camera_x, camera_y, width, height, center_x, center_y)
     };
 }
-/*
-for (let x = camera_x_origin; x < camera_x_origin + width; x++) {
-        const row = [];
-        for (let y = camera_y_origin; y < camera_y_origin + height; y++) {
-            let path_x = x;
-            let path_y = y;
-            let visible = true;
-            trace(`goal:${pov_x},${pov_y}++++++++++++++++++++++++++++++++++++++`)
-            while (visible && path_x !== pov_x && path_y !== pov_y) {
-                trace(`prev:${path_x},${path_y}`)
-                const distances = paths
-                    .map(path => [...path, get_linear_distance(pov_x, pov_y, path_x + path[0], path_y + path[1])])
-                    .sort((a, b) => a[2] - b[2]);
-                const shortest = distances[0];
-                if (get_tile(map, path_x + shortest[0], path_y + shortest[1]).flags[TileFlags.OPAQUE]) {
-                    visible = false;
-                } else {
-                    path_x = path_x + shortest[0];
-                    path_y = path_y + shortest[1];
-                }
-                trace(`post: ${path_x},${path_y}`)
-                count++;
-            }
-            row.push(visible); //replace by visible
+
+const bresenham = (x1, y1, x2, y2) => {
+    const coordinatesArray = [];
+    // Translate coordinates
+    // Define differences and error check
+    const dx = Math.abs(x2 - x1);
+    const dy = Math.abs(y2 - y1);
+    const sx = (x1 < x2) ? 1 : -1;
+    const sy = (y1 < y2) ? 1 : -1;
+    let err = dx - dy;
+    // Set first coordinates
+    coordinatesArray.push({ x: x1, y: y1 });
+    // Main loop
+    while (!((x1 == x2) && (y1 == y2))) {
+        const e2 = err << 1;
+        if (e2 > -dy) {
+            err -= dy;
+            x1 += sx;
         }
-        fov_map.push(row);
-    };
-*/
+        if (e2 < dx) {
+            err += dx;
+            y1 += sy;
+        }
+        // Set coordinates
+        coordinatesArray.push({ x: x1, y: y1 });
+    }
+    // Return the result
+    return coordinatesArray;
+}
 
 const get_fov_map = (map, origin_x, origin_y, width, height, center_x, center_y) => {
     const get_linear_distance = (x1, y1, x2, y2) => Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -49,7 +50,6 @@ const get_fov_map = (map, origin_x, origin_y, width, height, center_x, center_y)
     const camera_y_origin = Math.floor(origin_y / TILE_SIZE);
     const pov_x = camera_x_origin + center_x;
     const pov_y = camera_y_origin + center_y;
-    const max_distance = 10;
     //const max_distance_y = 8;
     //Cast rays
     const place_fov_flag = (x, y, value) => {
@@ -61,32 +61,38 @@ const get_fov_map = (map, origin_x, origin_y, width, height, center_x, center_y)
         }
     }
     place_fov_flag(pov_x, pov_y, true);
-    const octant_visibility = [true, true, true, true, true, true, true, true];
-    for (var row = 1; row < max_distance; row++) {
-        for (var col = 0; col <= row; col++) {
-            const octants = [[row, col], [-row, col], [row, -col], [-row, -col], [col, row], [-col, row], [col, -row], [-col, -row]];
-            octants.forEach((o, o_index) => {
-                const x = pov_x + o[0];
-                const y = pov_y + o[1];
-                trace(`calculate: ${x},${y}`)
-                if (!octant_visibility[o_index]) {
-                    trace('folse!');
-                    place_fov_flag(x, y, false);
-                } else {
-                    place_fov_flag(x, y, true);
-                }
-                if (get_tile(map, x, y).flags[TileFlags.OPAQUE]) {
-                    trace('opaque');
-                    octant_visibility[o_index] = false;
-                }
-            });
+
+    const edge_cells = [];
+    for (let x = camera_x_origin; x < camera_x_origin + width; x++) {
+        if (x === camera_x_origin || x === camera_x_origin + width - 1) {
+            for (let y = camera_y_origin; y < camera_y_origin + height; y++) {
+                edge_cells.push({ x, y });
+            }
+        } else {
+            edge_cells.push({ x, y: camera_y_origin });
+            edge_cells.push({ x, y: camera_y_origin + height });
         }
     }
+    edge_cells.forEach(cell => {
+        const line = bresenham(pov_x, pov_y, cell.x, cell.y);
+        let ray_visible = true;
+        line.forEach(point => {
+            if (ray_visible) {
+                place_fov_flag(point.x, point.y, true);
+                if (get_tile(map, point.x, point.y).flags[TileFlags.OPAQUE]) {
+                    ray_visible = false;
+                }
+            } else {
+                place_fov_flag(point.x, point.y, false);
+            }
+        })
+    })
+    const line = bresenham(pov_x, pov_y, camera_x_origin, camera_y_origin);
 
     return fov_map;
 }
 
 const update_camera_fov = (camera, map) => {
     const { x, y, width, height, center } = camera;
-    camera.fov_map = get_fov_map(map, x, y, width, height, center.x, center.y);
+    camera.fov_map = get_fov_map(map, x, y, width - 1, height - 1, center.x, center.y);
 }

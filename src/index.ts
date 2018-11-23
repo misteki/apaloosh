@@ -17,7 +17,7 @@ const init: () => void = () => {
 
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
 
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 11, 12, 6, 7, 8, 22, 23, 24, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3]);
     const map = create_tilemap(0, 0, 31, 17, tileset);
     const pc_moved = false;
 
