@@ -4,7 +4,7 @@ let $dt: number = 0;
 let $input_manager;
 
 const init: () => void = () => {
-    const pc = create_pc(226, 6);
+    const pc = create_pc(23, 18);
     const npcs = [
         create_actor(42, 25, 261),
         create_actor(32, 24, 262),
@@ -13,16 +13,16 @@ const init: () => void = () => {
     ];
 
     //Create map
-    const map_width = 30;
-    const map_height = 16;
+    const fov_width = 30;
+    const fov_height = 17;
     const tileset = create_tileset();
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
     add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3]);
-    const map = create_tilemap(0, 0, map_width, map_height, tileset);
+    const map = create_tilemap(0, 0, 30 * 8, 17 * 8, tileset);
     const pc_moved = false;
 
     // Camera
-    const camera = create_camera(pc.map_x, pc.map_y, map_width, map_height, 15, 7, map);
+    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, map);
 
     return {
         pc, npcs, camera, map, pc_moved

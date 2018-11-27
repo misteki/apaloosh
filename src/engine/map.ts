@@ -31,15 +31,38 @@ const create_tileset = () => {
 
 /* TILEMAP */
 
-const draw_tilemap = (tilemap, camera = { x: 0, y: 0, fov_map: null }) => {
+const draw_tilemap = (tilemap, camera = { x: 0, y: 0, width: 0, height: 0, fov_map: null, discovered_map: null }) => {
+    const { fov_map, discovered_map } = camera;
     const map_x = Math.floor(camera.x / TILE_SIZE);
     const map_y = Math.floor(camera.y / TILE_SIZE);
-    map(map_x, map_y, tilemap.width + 1, tilemap.height + 1, tilemap.x - (camera.x % TILE_SIZE), tilemap.y - (camera.y % TILE_SIZE), 0, 1, (tile_id, x, y) => {
-        if (camera.fov_map) {
+    map(map_x, map_y, camera.width + 1, camera.height + 1, tilemap.x - (camera.x % TILE_SIZE), tilemap.y - (camera.y % TILE_SIZE), 0, 1);
+    /* old remap
+    if (camera.fov_map) {
             return camera.fov_map[x][y] ? tile_id : 0;
         }
         return tile_id;
-    });
+    */
+    if (fov_map) {
+        for (let x = map_x; x < map_x + camera.width + 1; x++) {
+            for (let y = map_y; y < map_y + camera.height + 1; y++) {
+                if (fov_map[x]) {
+                    if (!fov_map[x][y]) {
+                        if (discovered_map[x][y]) {
+                            spr(238, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
+                        } else {
+                            spr(0, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
+                        }
+                    }
+                } else {
+                    if (discovered_map[x][y]) {
+                        spr(238, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
+                    } else {
+                        spr(0, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
+                    }
+                }
+            }
+        }
+    }
 };
 
 // Get tile at pixel coordinates

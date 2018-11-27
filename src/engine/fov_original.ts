@@ -3,9 +3,12 @@ function fieldOfView(ox, oy, r, visit, blocked) {
     visit(ox, oy); // origin always visited.
 
     function quadrant(dx, dy) {
+        trace(`quadrant! ${dx},${dy}`);
         var light = new Light(r);
         for (var dr = 1; dr <= r; dr += 1) {
             for (var i = 0; i <= dr; i++) {
+                trace(`cell ${dr - i},${i}`)
+
                 // Check for light hitting this cell.
                 var cell = new Pt(dr - i, i),
                     arc = light.hits(cell);
@@ -23,8 +26,10 @@ function fieldOfView(ox, oy, r, visit, blocked) {
         }
     }
 
-    quadrant(-1, +1); quadrant(+1, +1);
-    quadrant(-1, -1); quadrant(+1, -1);
+    quadrant(-1, +1);
+    quadrant(+1, +1);
+    quadrant(-1, -1);
+    quadrant(+1, -1);
 }
 
 /** Helper methods for points. */

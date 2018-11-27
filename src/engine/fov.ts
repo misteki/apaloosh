@@ -8,7 +8,6 @@ const permissive_fov = (ox, oy, r, visit, blocked) => {
             for (let i = 0; i <= dr; i++) {
                 // Check for light hitting this cell.
                 const cell = create_point(dr - i, i);
-                trace(`cell: x ${cell.x}, y: ${cell.y}`);
                 const arc = light_hits(cell, light);
                 if (!arc) {
                     //trace('no arc!');

@@ -1,16 +1,20 @@
-const create_camera = (init_x, init_y, width, height, center_x, center_y, map) => {
-    const camera_x = (init_x - center_x) * TILE_SIZE;
-    const camera_y = (init_y - center_y) * TILE_SIZE;
+const create_camera = (map_center_x, map_center_y, width, height, map) => {
+    const screen_x = (map_center_x - Math.floor(width / 2)) * TILE_SIZE;
+    const screen_y = (map_center_y - Math.floor(height / 2)) * TILE_SIZE;
+    const discovered_map = [];
+    for (let x = 0; x < map.width; x++) {
+        discovered_map[x] = [];
+        for (let y = 0; y < map.height; y++) {
+            discovered_map[x][y] = false;
+        }
+    }
     return {
-        x: camera_x,
-        y: camera_y,
-        center: {
-            x: center_x,
-            y: center_y
-        },
+        x: screen_x,
+        y: screen_y,
         width,
         height,
-        fov_map: get_fov_map(map, camera_x, camera_y, width, height, center_x, center_y)
+        fov_map: [],
+        discovered_map
     };
 }
 
@@ -43,12 +47,11 @@ const bresenham = (x1, y1, x2, y2) => {
     return coordinatesArray;
 }
 
-const get_fov_map = (map, origin_x, origin_y, width, height, pov_x, pov_y) => {
+const update_camera_fov = (camera, map, pov_x, pov_y) => {
+    const { discovered_map } = camera;
     trace('FOV CALCUALTION!');
     const init_time = time();
     const fov_map = [];
-    const camera_x_origin = Math.floor(origin_x / TILE_SIZE);
-    const camera_y_origin = Math.round(origin_y / TILE_SIZE);
     //Cast rays
     const place_fov_flag = (x, y, value) => {
         if (!fov_map[x]) {
@@ -58,48 +61,42 @@ const get_fov_map = (map, origin_x, origin_y, width, height, pov_x, pov_y) => {
             fov_map[x][y] = value;
         }
     }
-    place_fov_flag(pov_x, pov_y, true);
     /*
+
+place_fov_flag(pov_x, pov_y, true);
 
 const edge_cells = [];
 for (let x = camera_x_origin; x < camera_x_origin + width; x++) {
-    if (x === camera_x_origin || x === camera_x_origin + width - 1) {
-        for (let y = camera_y_origin; y < camera_y_origin + height; y++) {
-            edge_cells.push({ x, y });
-        }
-    } else {
-        edge_cells.push({ x, y: camera_y_origin });
-        edge_cells.push({ x, y: camera_y_origin + height });
+if (x === camera_x_origin || x === camera_x_origin + width - 1) {
+    for (let y = camera_y_origin; y < camera_y_origin + height; y++) {
+        edge_cells.push({ x, y });
     }
+} else {
+    edge_cells.push({ x, y: camera_y_origin });
+    edge_cells.push({ x, y: camera_y_origin + height });
+}
 }
 edge_cells.forEach(cell => {
-    const line = bresenham(pov_x, pov_y, cell.x, cell.y);
-    let ray_visible = true;
-    line.forEach(point => {
-        if (ray_visible) {
-            place_fov_flag(point.x, point.y, true);
-            if (get_tile(map, point.x, point.y).flags[TileFlags.OPAQUE]) {
-                ray_visible = false;
-            }
-        } else {
-            place_fov_flag(point.x, point.y, false);
+const line = bresenham(pov_x, pov_y, cell.x, cell.y);
+let ray_visible = true;
+line.forEach(point => {
+    if (ray_visible) {
+        place_fov_flag(point.x, point.y, true);
+        if (get_tile(map, point.x, point.y).flags[TileFlags.OPAQUE]) {
+            ray_visible = false;
         }
-    })
+    } else {
+        place_fov_flag(point.x, point.y, false);
+    }
+})
 })
 */
 
     /* test permissive fov */
     fieldOfView(pov_x, pov_y, 10,
-        (x, y) => { place_fov_flag(x, y, true) },
+        (x, y) => { discovered_map[x][y] = true; place_fov_flag(x, y, true) },
         (x, y) => { return get_tile(map, x, y).flags[TileFlags.OPAQUE] },
     );
     trace(`took: ${time() - init_time}`);
-
-
-    return fov_map;
-}
-
-const update_camera_fov = (camera, map, pc_x, pc_y) => {
-    const { x, y, width, height, center } = camera;
-    camera.fov_map = get_fov_map(map, x, y, width - 5, height - 5, pc_x, pc_y);
+    camera.fov_map = fov_map;
 }
