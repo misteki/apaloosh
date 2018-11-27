@@ -31,6 +31,7 @@ const update_pc = (pc, dt, state) => {
     }
     if (moved) {
         state.pc_moved = true;
+        trace(`player position:${pc.map_x},${pc.map_y}`);
         sfx(63, 0, 2, 0, 1);
     }
     // Tween
