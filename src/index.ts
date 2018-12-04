@@ -4,12 +4,12 @@ let $dt: number = 0;
 let $input_manager;
 
 const init: () => void = () => {
-    const pc = create_pc(23, 18);
+    const pc = create_pc(221, 7);
     const npcs = [
-        create_actor(42, 25, 261),
-        create_actor(32, 24, 262),
-        create_actor(30, 28, 268),
-        create_actor(38, 20, 276),
+        create_actor(227, 6, 261),
+        create_actor(238, 10, 262),
+        create_actor(228, 5, 268),
+        create_actor(235, 20, 276),
     ];
 
     //Create map
@@ -17,12 +17,13 @@ const init: () => void = () => {
     const fov_height = 17;
     const tileset = create_tileset();
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3]);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 6, 8, 22, 23, 24, 39]);
     const map = create_tilemap(0, 0, 30 * 8, 17 * 8, tileset);
     const pc_moved = false;
 
     // Camera
     const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, map);
+    update_camera_fov(camera, map, pc.map_x, pc.map_y);
 
     return {
         pc, npcs, camera, map, pc_moved
@@ -67,31 +68,13 @@ function TIC() {
     const { map, camera } = state;
     draw_tilemap(map, camera);
 
-    //FoV shadow
-    /*
-    const { fov_map } = camera;
-    if (fov_map) {
-        fov_map.forEach((row, row_index) => {
-            row.forEach((cell, column_index) => {
-                if (cell && !fov_map[row_index - 1][column_index]) {
-                    spr(475, (TILE_SIZE * row_index), TILE_SIZE * column_index, 1);
-                }
-                if (cell && !fov_map[row_index + 1][column_index]) {
-                    spr(477, TILE_SIZE * row_index, TILE_SIZE * column_index, 1);
-                }
-                if (cell && !fov_map[row_index][column_index + 1]) {
-                    spr(492, TILE_SIZE * row_index, TILE_SIZE * column_index, 1);
-                }
-                if (cell && !fov_map[row_index][column_index - 1]) {
-                    spr(460, TILE_SIZE * row_index, TILE_SIZE * column_index, 1);
-                }
-            })
-        })
-    }
-    */
-
     // Actors
-    [...npcs, pc].forEach((actor) => draw_actor(actor, camera));
+    [...npcs, pc].forEach((actor) => {
+        //Is actor withinf FOV
+        if (camera.fov_map && camera.fov_map[actor.map_x] && camera.fov_map[actor.map_x][actor.map_y]) {
+            draw_actor(actor, camera);
+        }
+    });
 
     // STATUS PANEL
     rect(0, 128, 240, 8, 8);

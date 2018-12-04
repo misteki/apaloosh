@@ -32,37 +32,34 @@ const create_tileset = () => {
 /* TILEMAP */
 
 const draw_tilemap = (tilemap, camera = { x: 0, y: 0, width: 0, height: 0, fov_map: null, discovered_map: null }) => {
-    const { fov_map, discovered_map } = camera;
-    const map_x = Math.floor(camera.x / TILE_SIZE);
-    const map_y = Math.floor(camera.y / TILE_SIZE);
-    map(map_x, map_y, camera.width + 1, camera.height + 1, tilemap.x - (camera.x % TILE_SIZE), tilemap.y - (camera.y % TILE_SIZE), 0, 1);
-    /* old remap
-    if (camera.fov_map) {
-            return camera.fov_map[x][y] ? tile_id : 0;
-        }
-        return tile_id;
-    */
-    if (fov_map) {
-        for (let x = map_x; x < map_x + camera.width + 1; x++) {
-            for (let y = map_y; y < map_y + camera.height + 1; y++) {
-                if (fov_map[x]) {
-                    if (!fov_map[x][y]) {
-                        if (discovered_map[x][y]) {
-                            spr(238, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
-                        } else {
-                            spr(0, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
-                        }
-                    }
-                } else {
-                    if (discovered_map[x][y]) {
-                        spr(238, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
-                    } else {
-                        spr(0, (x - map_x) * TILE_SIZE, (y - map_y) * TILE_SIZE, 1);
-                    }
-                }
+    const { x: c_x, y: c_y, width: c_width, height: c_height, fov_map, discovered_map } = camera;
+    const map_x = Math.floor(c_x / TILE_SIZE);
+    const map_y = Math.floor(c_y / TILE_SIZE);
+    const map_offset_x = tilemap.x - (c_x % TILE_SIZE);
+    const map_offset_y = tilemap.y - (c_y % TILE_SIZE);
+    const fog = [];
+    map(map_x, map_y, c_width + 1, c_height + 1, map_offset_x, map_offset_y, 0, 1, (tile_id, x, y) => {
+        // Gather fog painting data
+        const is_visible = fov_map[x] && fov_map[x][y];
+        const is_discovered = discovered_map[x] && discovered_map[x][y];
+        if (!is_visible) {
+            if (is_discovered) {
+                const screen_x = map_offset_x + (x - map_x) * TILE_SIZE;
+                const screen_y = map_offset_y + (y - map_y) * TILE_SIZE;
+                fog.push({ screen_x, screen_y, sprite_id: 238 });
+            } else {
+                return 0;
             }
         }
-    }
+        return tile_id;
+    });
+
+    //Paint fog
+    fog.forEach(({ screen_x, screen_y, sprite_id }) => {
+        //draw_fog(screen_x, screen_y, 1);
+        spr(sprite_id, screen_x, screen_y, 1);
+    });
+
 };
 
 // Get tile at pixel coordinates

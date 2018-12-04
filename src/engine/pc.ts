@@ -45,12 +45,13 @@ const update_pc = (pc, dt, state) => {
         camera.y = (pc.map_y * TILE_SIZE) - pc.y > 0 ? camera.y + speed : camera.y - speed;
         pc.y = (pc.map_y * TILE_SIZE) - pc.y > 0 ? pc.y + speed : pc.y - speed;
     }
+
 }
 
 const create_pc = (map_x, map_y) => {
     return {
         ...create_actor(map_x, map_y, 272),
-        movement: { direction: null, speed: 40 },
+        movement: { direction: null, moving: false, speed: 40, target: { x: map_x, y: map_y } },
         props: {},
     };
 }
