@@ -24,7 +24,7 @@ const init: () => void = () => {
     const pc_moved = false;
 
     // Camera
-    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, map);
+    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, true);
     update_camera_fov(camera, map, pc.map_x, pc.map_y);
 
     return {
