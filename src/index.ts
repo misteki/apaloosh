@@ -24,8 +24,11 @@ const init: () => void = () => {
     const pc_moved = false;
 
     // Camera
-    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, true);
-    update_camera_fov(camera, map, pc.map_x, pc.map_y);
+    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height,
+        create_field_of_view(10, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1));
+    update_fov(camera.fov, map, pc.map_x, pc.map_y);
+
+
 
     return {
         pc, npcs, camera, map, pc_moved
@@ -55,7 +58,7 @@ function TIC() {
     // -------------------- LOGIC -------------------- 
     update_pc(pc, $dt, state);
     if (state.pc_moved) {
-        update_camera_fov(state.camera, state.map, pc.map_x, pc.map_y);
+        update_fov(state.camera.fov, state.map, pc.map_x, pc.map_y);
     }
 
     npcs.forEach((npc) => {
@@ -71,9 +74,10 @@ function TIC() {
     draw_tilemap(map, camera);
 
     // Actors
+    const fov = state.camera.fov;
     [...npcs, pc].forEach((actor) => {
         //Is actor withinf FOV
-        if (camera.fov_map && camera.fov_map[actor.map_x] && camera.fov_map[actor.map_x][actor.map_y]) {
+        if (fov.visible_map && fov.visible_map[actor.map_x] && fov.visible_map[actor.map_x][actor.map_y]) {
             draw_actor(actor, camera);
         }
     });

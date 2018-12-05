@@ -137,3 +137,64 @@ const field_of_view = (ox, oy, r, x_limit, y_limit, visit, blocked) => {
     quadrant(-1, -1);
     quadrant(+1, -1);
 }
+
+const create_field_of_view = (radius, x_length, y_length) => ({
+    visible_map: [],
+    discovered_map: [],
+    radius,
+    x_length,
+    y_length
+});
+
+const update_fov = (fov, map, pov_x, pov_y) => {
+    const { discovered_map, radius, x_length, y_length } = fov;
+    const fov_map = [];
+    //Cast rays
+    const place_map_flag = (map, x, y, value) => {
+        if (!map[x]) {
+            map[x] = [];
+        }
+        if (!map[x][y]) {
+            map[x][y] = value;
+        }
+    }
+
+    /* Permissive fov to update visibility maps */
+    field_of_view(pov_x, pov_y, radius, x_length, y_length,
+        (x, y) => {
+            place_map_flag(discovered_map, x, y, true);
+            place_map_flag(fov_map, x, y, true);
+        },
+        (x, y) => {
+            return get_tile(map, x, y).flags[TileFlags.OPAQUE];
+        },
+    );
+    fov.visible_map = fov_map;
+}
+
+const draw_fog = (map, camera) => {
+    const { fov, x: c_x, y: c_y } = camera;
+    const { discovered_map, visible_map } = fov;
+    const map_offset_x = map.x - (c_x % TILE_SIZE);
+    const map_offset_y = map.y - (c_y % TILE_SIZE);
+    const fog_sprite_colorkey = 1;
+    //Paint fog
+    // +1 added to height and width to account for newly explored tiles while moving
+    for (let x = 0; x < camera.width + 1; x++) {
+        for (let y = 0; y < camera.height + 1; y++) {
+            const map_x = Math.floor(c_x / TILE_SIZE) + x;
+            const map_y = Math.floor(c_y / TILE_SIZE) + y;
+            const is_visible = visible_map[map_x] && visible_map[map_x][map_y];
+            const is_discovered = discovered_map[map_x] && discovered_map[map_x][map_y];
+            if (!is_visible) {
+                const screen_x = map_offset_x + x * TILE_SIZE;
+                const screen_y = map_offset_y + y * TILE_SIZE;
+                if (is_discovered) {
+                    spr(238, screen_x, screen_y, fog_sprite_colorkey);
+                } else {
+                    spr(0, screen_x, screen_y, fog_sprite_colorkey);
+                }
+            }
+        }
+    }
+};
