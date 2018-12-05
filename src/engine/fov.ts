@@ -1,36 +1,3 @@
-/** Compute the field of view from (ox, oy) out to radius r. */
-const field_of_view = (ox, oy, r, x_limit, y_limit, visit, blocked) => {
-    visit(ox, oy); // origin always visited.
-
-    const quadrant = (dx, dy) => {
-        const light = create_light(r);
-        for (let dr = 1; dr <= r; dr += 1) {
-            for (let i = 0; i <= dr; i++) {
-                if (dr - i < x_limit && i < y_limit) {
-                    // Check for light hitting this cell.
-                    const cell = create_point(dr - i, i),
-                        arc = light_hits(light, cell);
-                    if (!arc) { continue; }  // unlit
-
-                    // Show the lit cell, check if blocking.
-                    const ax = ox + cell.x * dx,
-                        ay = oy + cell.y * dy;
-                    visit(ax, ay);
-                    if (!blocked(ax, ay)) { continue; }  // unblocked
-
-                    // Blocking cells cast shadows.
-                    if (!light_shade(light, arc, cell)) { return; }  // no more light
-                }
-            }
-        }
-    }
-
-    quadrant(-1, +1);
-    quadrant(+1, +1);
-    quadrant(-1, -1);
-    quadrant(+1, -1);
-}
-
 /** Helper methods for points. */
 const create_point = (x, y) => ({ x, y });
 
@@ -137,3 +104,62 @@ const light_shade = (light, arci, pt) => {
     splice.apply(light.arcs, [arci.i, 1].concat(arc_shade(arc, pt)));
     return light.arcs.length > 0;
 }
+
+/** Compute the field of view from (ox, oy) out to radius r. */
+const field_of_view = (ox, oy, r, x_limit, y_limit, visit, blocked) => {
+    visit(ox, oy); // origin always visited.
+
+    const quadrant = (dx, dy) => {
+        const light = create_light(r);
+        for (let dr = 1; dr <= r; dr += 1) {
+            for (let i = 0; i <= dr; i++) {
+                if (dr - i < x_limit && i < y_limit) {
+                    // Check for light hitting this cell.
+                    const cell = create_point(dr - i, i),
+                        arc = light_hits(light, cell);
+                    if (!arc) { continue; }  // unlit
+
+                    // Show the lit cell, check if blocking.
+                    const ax = ox + cell.x * dx,
+                        ay = oy + cell.y * dy;
+                    visit(ax, ay);
+                    if (!blocked(ax, ay)) { continue; }  // unblocked
+
+                    // Blocking cells cast shadows.
+                    if (!light_shade(light, arc, cell)) { return; }  // no more light
+                }
+            }
+        }
+    }
+
+    quadrant(-1, +1);
+    quadrant(+1, +1);
+    quadrant(-1, -1);
+    quadrant(+1, -1);
+}
+
+const draw_fog = (map, camera) => {
+    const { fov_map, discovered_map, x: c_x, y: c_y } = camera;
+    const map_offset_x = map.x - (c_x % TILE_SIZE);
+    const map_offset_y = map.y - (c_y % TILE_SIZE);
+    const fog_sprite_colorkey = 1;
+    //Paint fog
+    // +1 added to height and width to account for newly explored tiles while moving
+    for (let x = 0; x < camera.width + 1; x++) {
+        for (let y = 0; y < camera.height + 1; y++) {
+            const map_x = Math.floor(c_x / TILE_SIZE) + x;
+            const map_y = Math.floor(c_y / TILE_SIZE) + y;
+            const is_visible = fov_map[map_x] && fov_map[map_x][map_y];
+            const is_discovered = discovered_map[map_x] && discovered_map[map_x][map_y];
+            if (!is_visible) {
+                const screen_x = map_offset_x + x * TILE_SIZE;
+                const screen_y = map_offset_y + y * TILE_SIZE;
+                if (is_discovered) {
+                    spr(238, screen_x, screen_y, fog_sprite_colorkey);
+                } else {
+                    spr(0, screen_x, screen_y, fog_sprite_colorkey);
+                }
+            }
+        }
+    }
+};

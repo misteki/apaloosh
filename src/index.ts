@@ -4,21 +4,23 @@ let $dt: number = 0;
 let $input_manager;
 
 const init: () => void = () => {
-    const pc = create_pc(221, 7);
+    const pc = create_pc(36, 22);
     const npcs = [
-        create_actor(227, 6, 261),
-        create_actor(238, 10, 262),
-        create_actor(228, 5, 268),
-        create_actor(235, 20, 276),
+        create_actor(37, 23, 261),
+        create_actor(40, 22, 262),
+        create_actor(42, 46, 268),
+        create_actor(51, 40, 276),
     ];
 
     //Create map
     const fov_width = 30;
-    const fov_height = 17;
+    const fov_height = 16;
+    const map_width = 30 * 8;
+    const map_height = 16 * 8;
     const tileset = create_tileset();
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
     add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 6, 8, 22, 23, 24, 39]);
-    const map = create_tilemap(0, 0, 30 * 8, 17 * 8, tileset);
+    const map = create_tilemap(0, 0, map_width, map_height, tileset);
     const pc_moved = false;
 
     // Camera
@@ -75,6 +77,8 @@ function TIC() {
             draw_actor(actor, camera);
         }
     });
+
+    draw_fog(map, camera);
 
     // STATUS PANEL
     rect(0, 128, 240, 8, 8);
