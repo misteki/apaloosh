@@ -4,25 +4,35 @@ let $dt: number = 0;
 let $input_manager;
 
 const init: () => void = () => {
-    const pc = create_pc(15, 20);
+    const pc = create_pc(36, 22);
     const npcs = [
-        create_actor(42, 25, 261),
-        create_actor(32, 24, 262),
-        create_actor(30, 28, 268),
-        create_actor(38, 20, 276),
+        create_actor(37, 23, 261),
+        create_actor(40, 22, 262),
+        create_actor(42, 46, 268),
+        create_actor(51, 40, 276),
     ];
 
-    // Camera
-    const camera = { x: (pc.map_x - 15) * TILE_SIZE, y: (pc.map_y - 7) * TILE_SIZE };
-
     //Create map
+    const fov_width = 30;
+    const fov_height = 16;
+    const map_width = 30 * 8;
+    const map_height = 16 * 8;
     const tileset = create_tileset();
-
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
-
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 11, 12]);
-    const map = create_tilemap(0, 0, 32, 18, tileset);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 6, 8, 22, 23, 24, 39]);
+    const map = create_tilemap(0, 0, map_width, map_height, tileset);
     const pc_moved = false;
+
+    // Camera
+    const fov = create_field_of_view(10, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1, {
+        full_fog_sprite_id: 0,
+        partial_fog_sprite_id: 238,
+        fog_sprite_colorkey: 1
+    });
+    update_fov(fov, map, pc.map_x, pc.map_y);
+
+    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, fov);
+
     return {
         pc, npcs, camera, map, pc_moved
     }
@@ -50,6 +60,10 @@ function TIC() {
 
     // -------------------- LOGIC -------------------- 
     update_pc(pc, $dt, state);
+    if (state.pc_moved) {
+        update_fov(state.camera.fov, state.map, pc.map_x, pc.map_y);
+    }
+
     npcs.forEach((npc) => {
         if (state.pc_moved) {
             step_npc(npc, $dt, state);
@@ -63,7 +77,15 @@ function TIC() {
     draw_tilemap(map, camera);
 
     // Actors
-    [...npcs, pc].forEach((actor) => draw_actor(actor, camera));
+    const fov = state.camera.fov;
+    [...npcs, pc].forEach((actor) => {
+        //Is actor within FOV
+        if (fov.visible_map && fov.visible_map[actor.map_x] && fov.visible_map[actor.map_x][actor.map_y]) {
+            draw_actor(actor, camera);
+        }
+    });
+
+    draw_fog(fov, map, camera);
 
     // STATUS PANEL
     rect(0, 128, 240, 8, 8);
