@@ -24,11 +24,14 @@ const init: () => void = () => {
     const pc_moved = false;
 
     // Camera
-    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height,
-        create_field_of_view(10, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1));
-    update_fov(camera.fov, map, pc.map_x, pc.map_y);
+    const fov = create_field_of_view(10, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1, {
+        full_fog_sprite_id: 0,
+        partial_fog_sprite_id: 238,
+        fog_sprite_colorkey: 1
+    });
+    update_fov(fov, map, pc.map_x, pc.map_y);
 
-
+    const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, fov);
 
     return {
         pc, npcs, camera, map, pc_moved
@@ -76,13 +79,13 @@ function TIC() {
     // Actors
     const fov = state.camera.fov;
     [...npcs, pc].forEach((actor) => {
-        //Is actor withinf FOV
+        //Is actor within FOV
         if (fov.visible_map && fov.visible_map[actor.map_x] && fov.visible_map[actor.map_x][actor.map_y]) {
             draw_actor(actor, camera);
         }
     });
 
-    draw_fog(map, camera);
+    draw_fog(fov, map, camera);
 
     // STATUS PANEL
     rect(0, 128, 240, 8, 8);
