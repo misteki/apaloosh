@@ -53,7 +53,7 @@ function TIC() {
     $t = nt;
 
     // -------------------- INPUT -------------------- 
-    const input = get_input();
+    const input = get_input(false);
     //PC movement
     const direction: Direction = is_pressed(input, Button.LEFT) ? Direction.LEFT : (is_pressed(input, Button.RIGHT) ? Direction.RIGHT : (is_pressed(input, Button.UP) ? Direction.UP : (is_pressed(input, Button.DOWN) ? Direction.DOWN : Direction.NONE)));
     pc.movement.direction = direction;
