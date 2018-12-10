@@ -180,7 +180,7 @@ const draw_fog = (fov, map, camera) => {
         const { full_fog_sprite_id, partial_fog_sprite_id, fog_sprite_colorkey } = fog;
         const map_offset_x = map.x - (c_x % TILE_SIZE);
         const map_offset_y = map.y - (c_y % TILE_SIZE);
-        //Paint fog
+        // Paint fog
         // +1 added to height and width to account for newly explored tiles while moving
         for (let x = 0; x < camera.width + 1; x++) {
             for (let y = 0; y < camera.height + 1; y++) {

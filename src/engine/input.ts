@@ -8,15 +8,24 @@ enum Button { UP, DOWN, LEFT, RIGHT, A, B, X, Y };
 
 const BUTTONS: number[] = [Button.UP, Button.DOWN, Button.LEFT, Button.RIGHT, Button.A, Button.B, Button.X, Button.Y];
 
-const get_input: () => InputState = () => {
+const get_input: (allow_simultaneous?: boolean) => InputState = (allow_simultaneous = true) => {
     const input_map = BUTTONS;
     const replaceAt: (original: string, index: number, replacement: string) => string = (original, index, replacement) => {
         return original.substr(0, index) + replacement + original.substr(index + replacement.length);
     };
     const input_state: any = { down: '00000000', pressed: '00000000' };
+    let simultaneous_prevent = false;
     input_map.forEach((id, index) => {
-        input_state.down = replaceAt(input_state.down, index, btn(index) ? '1' : '0');
-        input_state.pressed = replaceAt(input_state.pressed, index, btnp(index, 10, 10) ? '1' : '0');
+        if (!simultaneous_prevent) {
+            // Down
+            input_state.down = replaceAt(input_state.down, index, btn(index) ? '1' : '0');
+            // Pressed
+            input_state.pressed = replaceAt(input_state.pressed, index, btnp(index, 10, 10) ? '1' : '0');
+            // Prevent simultanous button press if disallowed
+            if (!allow_simultaneous && (input_state.down[index] === '1' || input_state.pressed[index] === '1')) {
+                simultaneous_prevent = true;
+            }
+        }
     });
     return input_state as InputState;
 };
