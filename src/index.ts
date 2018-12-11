@@ -13,10 +13,10 @@ const init: () => void = () => {
     ];
 
     //Create map
-    const fov_width = 30;
-    const fov_height = 16;
-    const map_width = 30 * 8;
-    const map_height = 16 * 8;
+    const fov_width = 21;
+    const fov_height = 17;
+    const map_width = 30 * 8; // In tiles
+    const map_height = 17 * 8 // In tiles
     const tileset = create_tileset();
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
     add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 6, 8, 22, 23, 24, 39]);
@@ -24,7 +24,8 @@ const init: () => void = () => {
     const pc_moved = false;
 
     // Camera
-    const fov = create_field_of_view(10, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1, {
+    const fov_radius = 20;
+    const fov = create_field_of_view(fov_radius, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1, {
         full_fog_sprite_id: 0,
         partial_fog_sprite_id: 238,
         fog_sprite_colorkey: 1
@@ -79,7 +80,7 @@ function TIC() {
     // Actors
     const fov = state.camera.fov;
     [...npcs, pc].forEach((actor) => {
-        //Is actor within FOV
+        // Is actor within FOV
         if (fov.visible_map && fov.visible_map[actor.map_x] && fov.visible_map[actor.map_x][actor.map_y]) {
             draw_actor(actor, camera);
         }
@@ -88,11 +89,19 @@ function TIC() {
     draw_fog(fov, map, camera);
 
     // STATUS PANEL
-    rect(0, 128, 240, 8, 8);
-    spr(510, 160, 128);
-    spr(495, 168, 128);
-    spr(479, 176, 128);
-    spr(463, 184, 128);
-    print("Explore", 198, 129, 14, false, 1, false);
-    print("Misteki", 1, 130, 14, false, 1, false);
+    rectb(168, 0, 72, 136, PANEL.OUTER_BORDER_COLOR);
+    rectb(169, 1, 70, 134, PANEL.INNER_BORDER_COLOR);
+    rect(170, 2, 68, 130, PANEL.BACKGROUND_COLOR);
+
+    print("Misteki", 172, 4, PANEL.PLAYER_NAME_COLOR, false, 1, false);
+    spr(511, 171, 12);
+    print("3/15", 182, 13, PANEL.HP_COLOR, false, 1, false);
+    line(170, 21, 238, 21, PANEL.INNER_BORDER_COLOR);
+
+    line(170, 117, 238, 117, PANEL.INNER_BORDER_COLOR);
+    rect(170, 118, 68, 8, PANEL.ACTIONS_BACKGROUND_COLOR);
+    print("A) Action", 172, 119, PANEL.PLAYER_NAME_COLOR, false, 1, true);
+    rect(170, 126, 68, 8, PANEL.ACTIONS_BACKGROUND_COLOR);
+    print("B) Look", 172, 127, PANEL.PLAYER_NAME_COLOR, false, 1, true);
+
 }
