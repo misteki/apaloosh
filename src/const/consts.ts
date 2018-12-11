@@ -13,5 +13,15 @@ enum TileFlags {
 const TILE_SIZE: number = 8;
 const WORLD_WIDTH: number = 8;
 
-//MOVEMENT//
+// MOVEMENT //
 enum Direction { NONE, UP, DOWN, LEFT, RIGHT };
+
+// UI //
+const PANEL = {
+    OUTER_BORDER_COLOR: 14,
+    INNER_BORDER_COLOR: 9,
+    BACKGROUND_COLOR: 0,
+    PLAYER_NAME_COLOR: 8,
+    HP_COLOR: 3,
+    ACTIONS_BACKGROUND_COLOR: 14,
+};
