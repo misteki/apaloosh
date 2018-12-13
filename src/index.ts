@@ -18,8 +18,8 @@ const init: () => void = () => {
     const map_width = 30 * 8; // In tiles
     const map_height = 17 * 8 // In tiles
     const tileset = create_tileset();
-    add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 6, 8, 22, 23, 24, 39]);
+    add_tiles_flag(tileset, TileFlags.SOLID, [3, 5]);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 5, 6]);
     const map = create_tilemap(0, 0, map_width, map_height, tileset);
     const pc_moved = false;
 
