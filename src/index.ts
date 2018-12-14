@@ -98,10 +98,8 @@ function TIC() {
     print("3/15", 182, 13, PANEL.HP_COLOR, false, 1, false);
     line(170, 21, 238, 21, PANEL.INNER_BORDER_COLOR);
 
-    line(170, 117, 238, 117, PANEL.INNER_BORDER_COLOR);
-    rect(170, 118, 68, 8, PANEL.ACTIONS_BACKGROUND_COLOR);
-    print("A) Action", 172, 119, PANEL.PLAYER_NAME_COLOR, false, 1, true);
-    rect(170, 126, 68, 8, PANEL.ACTIONS_BACKGROUND_COLOR);
-    print("B) Look", 172, 127, PANEL.PLAYER_NAME_COLOR, false, 1, true);
+    line(170, 116, 238, 116, PANEL.INNER_BORDER_COLOR);
+    print("A) Show order", 172, 119, 8, false, 1, true);
+    print("B) Look", 172, 127, 8, false, 1, true);
 
 }
