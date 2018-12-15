@@ -18,8 +18,8 @@ const init: () => void = () => {
     const map_width = 30 * 8; // In tiles
     const map_height = 17 * 8 // In tiles
     const tileset = create_tileset();
-    add_tiles_flag(tileset, TileFlags.SOLID, [3, 6, 7, 8, 18, 19, 22, 23, 24, 28, 29, 38, 39, 40, 54, 55, 56, 70, 72, 86, 87, 88]);
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 6, 8, 22, 23, 24, 39]);
+    add_tiles_flag(tileset, TileFlags.SOLID, [3, 5]);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 5, 6]);
     const map = create_tilemap(0, 0, map_width, map_height, tileset);
     const pc_moved = false;
 
@@ -98,10 +98,8 @@ function TIC() {
     print("3/15", 182, 13, PANEL.HP_COLOR, false, 1, false);
     line(170, 21, 238, 21, PANEL.INNER_BORDER_COLOR);
 
-    line(170, 117, 238, 117, PANEL.INNER_BORDER_COLOR);
-    rect(170, 118, 68, 8, PANEL.ACTIONS_BACKGROUND_COLOR);
-    print("A) Action", 172, 119, PANEL.PLAYER_NAME_COLOR, false, 1, true);
-    rect(170, 126, 68, 8, PANEL.ACTIONS_BACKGROUND_COLOR);
-    print("B) Look", 172, 127, PANEL.PLAYER_NAME_COLOR, false, 1, true);
+    line(170, 116, 238, 116, PANEL.INNER_BORDER_COLOR);
+    print("A) Show order", 172, 119, 8, false, 1, true);
+    print("B) Look", 172, 127, 8, false, 1, true);
 
 }
