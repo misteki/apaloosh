@@ -13,8 +13,8 @@ const init: () => void = () => {
     ];
 
     //Create map
-    const fov_width = 21;
-    const fov_height = 17;
+    const fov_width = 30;
+    const fov_height = 16;
     const map_width = 30 * 8; // In tiles
     const map_height = 17 * 8 // In tiles
     const tileset = create_tileset();
@@ -88,18 +88,11 @@ function TIC() {
 
     draw_fog(fov, map, camera);
 
+
     // STATUS PANEL
-    rectb(168, 0, 72, 136, PANEL.OUTER_BORDER_COLOR);
-    rectb(169, 1, 70, 134, PANEL.INNER_BORDER_COLOR);
-    rect(170, 2, 68, 130, PANEL.BACKGROUND_COLOR);
-
-    print("Misteki", 172, 4, PANEL.PLAYER_NAME_COLOR, false, 1, false);
-    spr(511, 171, 12);
-    print("3/15", 182, 13, PANEL.HP_COLOR, false, 1, false);
-    line(170, 21, 238, 21, PANEL.INNER_BORDER_COLOR);
-
-    line(170, 116, 238, 116, PANEL.INNER_BORDER_COLOR);
-    print("A) Show order", 172, 119, 8, false, 1, true);
-    print("B) Look", 172, 127, 8, false, 1, true);
+    rect(0, 128, 240, 8, 8);
+    print('Misteki', 2, 129, 14);
+    const commands = "A)Action  B)Show order";
+    print(commands, SCREEN_WIDTH - commands.length * 4, 129, 14, true, 1, true);
 
 }
