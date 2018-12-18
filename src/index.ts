@@ -34,8 +34,19 @@ const init: () => void = () => {
 
     const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, fov);
 
+    const status_bar = {
+        x: 0,
+        y: 128,
+        width: 240,
+        height: 8,
+        background_color: 8,
+        font_color: 14,
+        x_content_offset: 2,
+        y_content_offset: 1
+    }
+
     return {
-        pc, npcs, camera, map, pc_moved
+        pc, npcs, camera, map, pc_moved, status_bar
     }
 };
 
@@ -74,7 +85,7 @@ function TIC() {
     state.pc_moved = false;
     // -------------------- DRAW --------------------
     cls(0);
-    const { map, camera } = state;
+    const { map, camera, status_bar } = state;
     draw_tilemap(map, camera);
 
     // Actors
@@ -90,9 +101,13 @@ function TIC() {
 
 
     // STATUS PANEL
-    rect(0, 128, 240, 8, 8);
-    print('Misteki', 2, 129, 14);
-    const commands = "A)Action  B)Show order";
-    print(commands, SCREEN_WIDTH - commands.length * 4, 129, 14, true, 1, true);
+    const { x, y, width, height, background_color, x_content_offset, y_content_offset, font_color } = status_bar;
+    rect(x, y, width, height, background_color);
+    print('Misteki', x + x_content_offset, y + y_content_offset, font_color);
+    const commands = ["Action", "Show order"];
+    print("A)", 170, 129, 14);
+    print("Action", 182, 129, 14, false, 1, true);
+    print("B)", 210, 129, 14);
+    print("Look", 222, 129, 14, false, 1, true);
 
 }
