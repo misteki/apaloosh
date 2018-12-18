@@ -13,8 +13,8 @@ const init: () => void = () => {
     ];
 
     //Create map
-    const fov_width = 21;
-    const fov_height = 17;
+    const fov_width = 30;
+    const fov_height = 16;
     const map_width = 30 * 8; // In tiles
     const map_height = 17 * 8 // In tiles
     const tileset = create_tileset();
@@ -34,8 +34,19 @@ const init: () => void = () => {
 
     const camera = create_camera(pc.map_x, pc.map_y, fov_width, fov_height, fov);
 
+    const status_bar = {
+        x: 0,
+        y: 128,
+        width: 240,
+        height: 8,
+        background_color: 8,
+        font_color: 14,
+        x_content_offset: 2,
+        y_content_offset: 1
+    }
+
     return {
-        pc, npcs, camera, map, pc_moved
+        pc, npcs, camera, map, pc_moved, status_bar
     }
 };
 
@@ -74,7 +85,7 @@ function TIC() {
     state.pc_moved = false;
     // -------------------- DRAW --------------------
     cls(0);
-    const { map, camera } = state;
+    const { map, camera, status_bar } = state;
     draw_tilemap(map, camera);
 
     // Actors
@@ -88,18 +99,15 @@ function TIC() {
 
     draw_fog(fov, map, camera);
 
+
     // STATUS PANEL
-    rectb(168, 0, 72, 136, PANEL.OUTER_BORDER_COLOR);
-    rectb(169, 1, 70, 134, PANEL.INNER_BORDER_COLOR);
-    rect(170, 2, 68, 130, PANEL.BACKGROUND_COLOR);
-
-    print("Misteki", 172, 4, PANEL.PLAYER_NAME_COLOR, false, 1, false);
-    spr(511, 171, 12);
-    print("3/15", 182, 13, PANEL.HP_COLOR, false, 1, false);
-    line(170, 21, 238, 21, PANEL.INNER_BORDER_COLOR);
-
-    line(170, 116, 238, 116, PANEL.INNER_BORDER_COLOR);
-    print("A) Show order", 172, 119, 8, false, 1, true);
-    print("B) Look", 172, 127, 8, false, 1, true);
+    const { x, y, width, height, background_color, x_content_offset, y_content_offset, font_color } = status_bar;
+    rect(x, y, width, height, background_color);
+    print('Misteki', x + x_content_offset, y + y_content_offset, font_color);
+    const commands = ["Action", "Show order"];
+    print("A)", 170, 129, 14);
+    print("Action", 182, 129, 14, false, 1, true);
+    print("B)", 210, 129, 14);
+    print("Look", 222, 129, 14, false, 1, true);
 
 }
