@@ -1,10 +1,16 @@
-const create_actor = (map_x, map_y, sprite_id, colorkey = 1) => {
+const create_actor = (map_x, map_y, sprite, status = {
+    hp: 1,
+    total_hp: 1,
+    ap: 1,
+    total_ap: 1,
+}) => {
     return {
         x: map_x * TILE_SIZE,
         y: map_y * TILE_SIZE,
         map_x,
         map_y,
-        sprite: create_sprite(sprite_id, { colorkey }),
+        sprite,
+        status
     }
 }
 

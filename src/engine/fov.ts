@@ -174,22 +174,22 @@ const update_fov = (fov, map, pov_x, pov_y) => {
 }
 
 const draw_fog = (fov, map, camera) => {
+    // Paint fog
     if (fov.fog) {
         const { x: c_x, y: c_y } = camera;
         const { discovered_map, visible_map, fog } = fov;
         const { full_fog_sprite_id, partial_fog_sprite_id, fog_sprite_colorkey } = fog;
+        const map_x = Math.floor(c_x / TILE_SIZE);
+        const map_y = Math.floor(c_y / TILE_SIZE);
         const map_offset_x = map.x - (c_x % TILE_SIZE);
         const map_offset_y = map.y - (c_y % TILE_SIZE);
-        // Paint fog
         // +1 added to height and width to account for newly explored tiles while moving
-        for (let x = 0; x < camera.width + 1; x++) {
-            for (let y = 0; y < camera.height + 1; y++) {
-                const map_x = Math.floor(c_x / TILE_SIZE) + x;
-                const map_y = Math.floor(c_y / TILE_SIZE) + y;
-                const screen_x = map_offset_x + x * TILE_SIZE;
-                const screen_y = map_offset_y + y * TILE_SIZE;
-                const is_visible = visible_map[map_x] && visible_map[map_x][map_y];
-                const is_discovered = discovered_map[map_x] && discovered_map[map_x][map_y];
+        for (let x = map_x; x < map_x + camera.width + 1; x++) {
+            for (let y = map_y; y < map_y + camera.height + 1; y++) {
+                const screen_x = map_offset_x + (x - map_x) * TILE_SIZE;
+                const screen_y = map_offset_y + (y - map_y) * TILE_SIZE;
+                const is_visible = visible_map[x] && visible_map[x][y];
+                const is_discovered = discovered_map[x] && discovered_map[x][y];
                 if (!is_visible) {
                     if (is_discovered) {
                         spr(partial_fog_sprite_id, screen_x, screen_y, fog_sprite_colorkey);
