@@ -31,8 +31,8 @@ const create_tileset = () => {
 
 /* TILEMAP */
 
-const draw_tilemap = (tilemap, camera = { x: 0, y: 0, width: 0, height: 0, fov_map: null, discovered_map: null }) => {
-    const { x: c_x, y: c_y, width: c_width, height: c_height, fov_map, discovered_map } = camera;
+const draw_tilemap = (tilemap, camera = { x: 0, y: 0, width: 0, height: 0, fov: null }) => {
+    const { x: c_x, y: c_y, width: c_width, height: c_height, fov } = camera;
     const map_x = Math.floor(c_x / TILE_SIZE);
     const map_y = Math.floor(c_y / TILE_SIZE);
     const map_offset_x = tilemap.x - (c_x % TILE_SIZE);

@@ -1,4 +1,4 @@
-const DEFAULT_COLORKEY: number = -1;
+const DEFAULT_COLORKEY: number = 1;
 
 interface Sprite {
     id: number;
