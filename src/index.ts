@@ -99,12 +99,11 @@ function TIC() {
 
     draw_fog(fov, map, camera);
 
-
     // STATUS PANEL
-    const { x, y, width, height, background_color, x_content_offset, y_content_offset, font_color } = status_bar;
-    rect(x, y, width, height, background_color);
-    print(`Misteki | `, x + x_content_offset, y + y_content_offset, font_color);
-    print(`HP: ${pc.status.hp}/${pc.status.total_hp}`, x + x_content_offset + 50, y + y_content_offset, font_color);
+    const { background_color, font_color } = status_bar;
+    rect(0, 128, 240, 8, background_color);
+    print(`Misteki | `, 2, 129, font_color);
+    print(`HP: ${pc.status.hp}/${pc.status.total_hp}`, 52, 129, font_color);
     const commands = ["Action", "Show order"];
     print("| A)", 164, 129, 14);
     print("Action", 182, 129, 14, false, 1, true);
