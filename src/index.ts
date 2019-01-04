@@ -18,8 +18,8 @@ const init: () => void = () => {
     const map_width = 30 * 8; // In tiles
     const map_height = 17 * 8 // In tiles
     const tileset = create_tileset();
-    add_tiles_flag(tileset, TileFlags.SOLID, [3, 5]);
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 5, 6]);
+    add_tiles_flag(tileset, TileFlags.SOLID, [3, 5, 7, 22, 23, 24, 39]);
+    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 5, 7, 22, 23, 24, 39]);
     const map = create_tilemap(0, 0, map_width, map_height, tileset);
     const pc_moved = false;
 
@@ -40,7 +40,7 @@ const init: () => void = () => {
         width: 240,
         height: 8,
         background_color: 8,
-        font_color: 14,
+        font_color: 0,
         x_content_offset: 2,
         y_content_offset: 1
     }
@@ -105,9 +105,15 @@ function TIC() {
     print(`Misteki | `, 2, 129, font_color);
     print(`HP: ${pc.status.hp}/${pc.status.total_hp}`, 52, 129, font_color);
     const commands = ["Action", "Show order"];
-    print("| A)", 164, 129, 14);
-    print("Action", 182, 129, 14, false, 1, true);
-    print("B)", 210, 129, 14);
-    print("Look", 222, 129, 14, false, 1, true);
+    print("| A)", 164, 129, font_color);
+    print("Action", 182, 129, font_color, false, 1, true);
+    print("B)", 210, 129, font_color);
+    print("Look", 222, 129, font_color, false, 1, true);
 
+    //Dialog test
+    /*
+    rect(28, 43, 180, 20, 0);
+    print("Gordo rata, gordo rata", 30, 45, 15, false, 1);
+    print("Recatate y devolvememe la garrafaa", 30, 53, 15, false, 1);
+    */
 }
