@@ -31,7 +31,7 @@ const update_pc = (pc, dt, state) => {
     }
     if (moved) {
         state.pc_moved = true;
-        sfx(63, 0, 2, 0, 1);
+        sfx(63, 0, -1, 0, 1);
     }
     // Tween
     const speed = Math.round(dt * 50);
