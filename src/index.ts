@@ -4,7 +4,7 @@ let $dt: number = 0;
 let $input_manager;
 
 const init: () => void = () => {
-    const pc = create_pc(12, 34);
+    const pc = create_pc(46, 48);
     const npcs = [
         create_actor(37, 23, create_sprite(261)),
         create_actor(40, 22, create_sprite(262)),
