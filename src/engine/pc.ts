@@ -54,7 +54,7 @@ const create_pc = (map_x, map_y) => {
             map_y,
             create_sprite(272),
             { hp: 10, ap: 1, total_hp: 10, total_ap: 2 }),
-        movement: { direction: null, moving: false, speed: 40, target: { x: map_x, y: map_y } },
+        movement: { direction: null, moving: false, speed: 20, target: { x: map_x, y: map_y } },
         props: {},
     };
 }
