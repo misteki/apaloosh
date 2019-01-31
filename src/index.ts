@@ -44,7 +44,6 @@ const init: () => void = () => {
         y_content_offset: 1
     }
 
-
     // "thinking" flag freezes logic updates so we can take a whole game cycle to solely calculate CPU intensive tasks
     // (FOV , AI, others) without graphically lagging the game because of the big delta that cycle would have
     const thinking = false;

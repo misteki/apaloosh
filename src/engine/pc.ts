@@ -34,7 +34,7 @@ const update_pc = (pc, dt, state) => {
         sfx(63, 0, -1, 0, 1);
     }
     // Tween
-    const speed = Math.round(dt * 50);
+    const speed = Math.round(dt * movement.speed);
     const arrived_x = pc.x === pc.map_x * TILE_SIZE;
     const arrived_y = pc.y === pc.map_y * TILE_SIZE;
     if (!arrived_x) {
@@ -56,6 +56,6 @@ const create_pc = (map_x, map_y) => {
         map_y,
         sprite: create_sprite(272),
         status: { hp: 10, ap: 1, total_hp: 10, total_ap: 2 },
-        movement: { direction: null, moving: false, speed: 20, target: { x: map_x, y: map_y } },
+        movement: { direction: null, moving: false, speed: 40, target: { x: map_x, y: map_y } },
     };
 }
