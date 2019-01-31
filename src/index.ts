@@ -6,10 +6,10 @@ let $input_manager;
 const init: () => void = () => {
     const pc = create_pc(46, 48);
     const npcs = [
-        create_actor(37, 23, create_sprite(261)),
-        create_actor(40, 22, create_sprite(262)),
-        create_actor(42, 46, create_sprite(268)),
-        create_actor(51, 40, create_sprite(276)),
+        create_npc(37, 23, create_sprite(261)),
+        create_npc(40, 22, create_sprite(262)),
+        create_npc(42, 46, create_sprite(268)),
+        create_npc(51, 40, create_sprite(276)),
     ];
 
     //Create map
@@ -21,10 +21,9 @@ const init: () => void = () => {
     add_tiles_flag(tileset, TileFlags.SOLID, [3, 5, 7, 22, 23, 24, 39]);
     add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 5, 7, 22, 23, 24, 39]);
     const map = create_tilemap(0, 0, map_width, map_height, tileset);
-    const pc_moved = false;
 
     // Camera
-    const fov_radius = 20;
+    const fov_radius = 30;
     const fov = create_field_of_view(fov_radius, Math.floor(fov_width / 2) + 1, Math.floor(fov_height / 2) + 1, {
         full_fog_sprite_id: 0,
         partial_fog_sprite_id: 238,
@@ -45,8 +44,13 @@ const init: () => void = () => {
         y_content_offset: 1
     }
 
+
+    // "thinking" flag freezes logic updates so we can take a whole game cycle to solely calculate CPU intensive tasks
+    // (FOV , AI, others) without graphically lagging the game because of the big delta that cycle would have
+    const thinking = false;
+
     return {
-        pc, npcs, camera, map, pc_moved, status_bar
+        pc, npcs, camera, map, thinking, status_bar
     }
 };
 
@@ -57,6 +61,8 @@ function TIC() {
     if ($t === 0) {
         state = init();
     }
+    const start_time = time();
+
     const { pc, npcs } = state;
 
     // -------------------- TIMER UPDATES --------------------
@@ -72,17 +78,17 @@ function TIC() {
 
     // -------------------- LOGIC -------------------- 
     update_pc(pc, $dt, state);
-    if (state.pc_moved) {
+    if (state.thinking) {
         update_fov(state.camera.fov, state.map, pc.map_x, pc.map_y);
-    }
-
-    npcs.forEach((npc) => {
-        if (state.pc_moved) {
+        npcs.forEach((npc) => {
             step_npc(npc, $dt, state);
-        }
-        update_npc(npc, $dt, state);
-    });
-    state.pc_moved = false;
+        });
+    } else {
+        npcs.forEach((npc) => {
+            update_npc(npc, $dt, state);
+        });
+    }
+    state.thinking = false;
     // -------------------- DRAW --------------------
     cls(0);
     const { map, camera, status_bar } = state;
@@ -93,7 +99,7 @@ function TIC() {
     [...npcs, pc].forEach((actor) => {
         // Is actor within FOV
         if (fov.visible_map && fov.visible_map[actor.map_x] && fov.visible_map[actor.map_x][actor.map_y]) {
-            draw_actor(actor, camera);
+            draw_npc(actor, camera);
         }
     });
 

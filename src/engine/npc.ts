@@ -1,4 +1,4 @@
-const create_actor = (map_x, map_y, sprite, status = {
+const create_npc = (map_x, map_y, sprite, status = {
     hp: 1,
     total_hp: 1,
     ap: 1,
@@ -14,7 +14,7 @@ const create_actor = (map_x, map_y, sprite, status = {
     }
 }
 
-const draw_actor = (actor, camera = { x: 0, y: 0 }) => {
+const draw_npc = (actor, camera = { x: 0, y: 0 }) => {
     draw_sprite(actor.x - camera.x, actor.y - camera.y, actor.sprite);
 }
 
