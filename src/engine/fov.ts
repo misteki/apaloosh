@@ -107,13 +107,16 @@ const light_shade = (light, arci, pt) => {
 
 /** Compute the field of view from (ox, oy) out to radius r. */
 const field_of_view = (ox, oy, r, x_limit, y_limit, visit, blocked) => {
+    const start_time = time();
     visit(ox, oy); // origin always visited.
 
     const quadrant = (dx, dy) => {
         const light = create_light(r);
         for (let dr = 1; dr <= r; dr += 1) {
+            let dr_ops = 0;
             for (let i = 0; i <= dr; i++) {
                 if (dr - i < x_limit && i < y_limit) {
+                    dr_ops++;
                     // Check for light hitting this cell.
                     const cell = create_point(dr - i, i),
                         arc = light_hits(light, cell);
@@ -128,6 +131,9 @@ const field_of_view = (ox, oy, r, x_limit, y_limit, visit, blocked) => {
                     // Blocking cells cast shadows.
                     if (!light_shade(light, arc, cell)) { return; }  // no more light
                 }
+            }
+            if (dr_ops === 0) {
+                return;
             }
         }
     }
