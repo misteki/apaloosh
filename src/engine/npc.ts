@@ -1,16 +1,11 @@
-const create_npc = (map_x, map_y, sprite, status = {
-    hp: 1,
-    total_hp: 1,
-    ap: 1,
-    total_ap: 1,
-}) => {
+const create_npc = (map_x, map_y, sprite, stats = {}) => {
     return {
         x: map_x * TILE_SIZE,
         y: map_y * TILE_SIZE,
         map_x,
         map_y,
         sprite,
-        status
+        stats: { hp: 10, total_hp: 10, ap: 1, leftover_ap: 0, speed: 8 },
     }
 }
 
@@ -18,7 +13,7 @@ const draw_npc = (actor, camera = { x: 0, y: 0 }) => {
     draw_sprite(actor.x - camera.x, actor.y - camera.y, actor.sprite);
 }
 
-const step_npc = (npc, dt, state) => {
+const step_npc = (npc, state) => {
     //RANDOM MOV
     const direction = Math.floor(Math.random() * 5);
     const { map } = state;
@@ -45,6 +40,7 @@ const step_npc = (npc, dt, state) => {
             }
             break;
     }
+    npc.stats.ap = npc.stats.ap - 1;
 }
 
 const update_npc = (npc, dt, state) => {

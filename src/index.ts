@@ -12,6 +12,7 @@ const init: () => void = () => {
         create_npc(51, 40, create_sprite(276)),
     ];
 
+
     //Create map
     const fov_width = 30;
     const fov_height = 16;
@@ -44,12 +45,16 @@ const init: () => void = () => {
         y_content_offset: 1
     }
 
-    // "thinking" flag freezes logic updates so we can take a whole game cycle to solely calculate CPU intensive tasks
+    // "proccesing" flag freezes logic updates so we can take a whole game cycle to solely calculate CPU intensive tasks
     // (FOV , AI, others) without graphically lagging the game because of the big delta that cycle would have
-    const thinking = false;
+    const turn_system = {
+        state: TurnSystemState.ROUND_START,
+        processing: false,
+        simultaneous: true,
+    };
 
     return {
-        pc, npcs, camera, map, thinking, status_bar
+        pc, npcs, camera, map, turn_system, status_bar,
     }
 };
 
@@ -62,7 +67,7 @@ function TIC() {
     }
     const start_time = time();
 
-    const { pc, npcs } = state;
+    const { pc, npcs, turn_system } = state;
 
     // -------------------- TIMER UPDATES --------------------
     const nt: number = time();
@@ -72,22 +77,17 @@ function TIC() {
     // -------------------- INPUT -------------------- 
     const input = get_input(false);
     //PC movement
-    const direction: Direction = is_pressed(input, Button.LEFT) ? Direction.LEFT : (is_pressed(input, Button.RIGHT) ? Direction.RIGHT : (is_pressed(input, Button.UP) ? Direction.UP : (is_pressed(input, Button.DOWN) ? Direction.DOWN : Direction.NONE)));
-    pc.movement.direction = direction;
 
-    // -------------------- LOGIC -------------------- 
+    // -------------------- LOGIC --------------------
+    update_turn_round(input, state);
+
+    //Update logic
     update_pc(pc, $dt, state);
-    if (state.thinking) {
-        update_fov(state.camera.fov, state.map, pc.map_x, pc.map_y);
-        npcs.forEach((npc) => {
-            step_npc(npc, $dt, state);
-        });
-    } else {
+    if (!turn_system.processing) {
         npcs.forEach((npc) => {
             update_npc(npc, $dt, state);
         });
     }
-    state.thinking = false;
     // -------------------- DRAW --------------------
     cls(0);
     const { map, camera, status_bar } = state;
@@ -108,7 +108,7 @@ function TIC() {
     const { background_color, font_color } = status_bar;
     rect(0, 128, 240, 8, background_color);
     print(`Misteki | `, 2, 129, font_color);
-    print(`HP: ${pc.status.hp}/${pc.status.total_hp}`, 52, 129, font_color);
+    print(`HP: ${pc.stats.hp}/${pc.stats.total_hp}`, 52, 129, font_color);
     const commands = ["Action", "Show order"];
     print("| A)", 164, 129, font_color);
     print("Action", 182, 129, font_color, false, 1, true);
