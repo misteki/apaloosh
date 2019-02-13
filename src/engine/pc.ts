@@ -3,36 +3,44 @@ const step_pc = (pc, state) => {
     const { direction } = movement;
     const { map, turn_system } = state;
     let acted = false;
+
+    let moved = false;
+    let move_coords = { x: 0, y: 0 };
     switch (direction) {
         case Direction.LEFT:
-            if (!get_tile(map, pc.map_x - 1, pc.map_y).flags[TileFlags.SOLID]) {
-                pc.map_x = pc.map_x - 1;
-                acted = true;
-            }
+            move_coords = { x: -1, y: 0 };
+            moved = true;
             break;
         case Direction.RIGHT:
-            if (!get_tile(map, pc.map_x + 1, pc.map_y).flags[TileFlags.SOLID]) {
-                pc.map_x = pc.map_x + 1;
-                acted = true;
-            }
+            move_coords = { x: 1, y: 0 };
+            moved = true;
             break;
         case Direction.UP:
-            if (!get_tile(map, pc.map_x, pc.map_y - 1).flags[TileFlags.SOLID]) {
-                pc.map_y = pc.map_y - 1;
-                acted = true;
-            }
+            move_coords = { x: 0, y: -1 };
+            moved = true;
             break;
         case Direction.DOWN:
-            if (!get_tile(map, pc.map_x, pc.map_y + 1).flags[TileFlags.SOLID]) {
-                pc.map_y = pc.map_y + 1;
-                acted = true;
-            }
+            move_coords = { x: 0, y: 1 };
+            moved = true;
             break;
     }
+    if (moved) {
+        const target_coords = { x: pc.map_x + move_coords.x, y: pc.map_y + move_coords.y };
+        const target_tile = get_tile(map, target_coords.x, target_coords.y);
+        if (!tile_has_flag(target_tile, TileFlags.SOLID)) {
+            pc.map_x = pc.map_x + move_coords.x;
+            pc.map_y = pc.map_y + move_coords.y;
+            acted = true;
+        } else if (tile_has_flag(target_tile, TileFlags.OPENABLE)) {
+            tile_handle_event(target_tile, TileEvents.OPEN, target_coords.x, target_coords.y);
+            sfx(63, 0, -1, 1, 15);
+            acted = true;
+        }
+    }
+    // If any action was performed
     if (acted) {
         turn_system.processing = true;
         pc.stats.ap = pc.stats.ap - 1;
-        sfx(63, 0, -1, 0, 1);
     }
 }
 

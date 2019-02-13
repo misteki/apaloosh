@@ -14,8 +14,14 @@ const SMALL_FONT_HEIGHT = 6;
 enum TileFlags {
     SOLID,
     OPAQUE,
-    FREEZING
+    OPENABLE,
+    CLOSABLE,
 };
+enum TileEvents {
+    OPEN,
+    CLOSE,
+}
+
 const TILE_SIZE: number = 8;
 const WORLD_WIDTH: number = 8;
 

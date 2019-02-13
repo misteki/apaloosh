@@ -9,18 +9,16 @@ const init: () => void = () => {
         create_npc(37, 23, create_sprite(261)),
         create_npc(40, 22, create_sprite(262)),
         create_npc(42, 46, create_sprite(268)),
-        create_npc(51, 40, create_sprite(276)),
+        create_npc(51, 40, create_sprite(280)),
     ];
-
 
     //Create map
     const fov_width = 30;
     const fov_height = 16;
     const map_width = 30 * 8; // In tiles
     const map_height = 17 * 8 // In tiles
-    const tileset = create_tileset();
-    add_tiles_flag(tileset, TileFlags.SOLID, [3, 5, 7, 22, 23, 24, 39]);
-    add_tiles_flag(tileset, TileFlags.OPAQUE, [1, 3, 5, 7, 22, 23, 24, 39]);
+    const tileset = create_tileset(TILESET_DATA);
+
     const map = create_tilemap(0, 0, map_width, map_height, tileset);
 
     // Camera
