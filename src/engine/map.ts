@@ -1,31 +1,24 @@
-const create_tile = (id, flags = []) => ({
+const create_tile = (id, flags = [], event_handlers = {}) => ({
     id,
-    flags: flags.reduce((accumulator: boolean[], flag: number) => {
-        accumulator[flag] = true;
-        return accumulator;
-    }, [])
-});
+    flags,
+    event_handlers,
+})
+
+const tile_has_flag = (tile, flag) => {
+    return !!tile.flags.some((f) => f == flag);
+}
+
+const tile_handle_event = (tile, event, map_x, map_y) => {
+    const handler = tile.event_handlers[event];
+    if (handler) {
+        handler(map_x, map_y);
+    }
+}
 
 /* TILESET */
-
-const add_tiles_flag = (tileset, flag: number, tiles: number[]) => {
-    tiles.forEach((tile_id: number) => {
-        if (!tileset.flags[tile_id]) {
-            tileset.flags[tile_id] = [flag];
-        } else {
-            tileset.flags[tile_id].push(flag);
-        }
-    })
-}
-
-const add_tile_spawner = (tileset, id: number, spawner: (id: number, x: number, y: number) => any) => {
-    tileset.spawners[id] ? tileset.spawners[id].push(spawner) : tileset.spawners[id] = [spawner];
-}
-
-const create_tileset = () => {
+const create_tileset = (data) => {
     return {
-        flags: [],
-        spawners: []
+        tiles: data
     }
 };
 
@@ -52,8 +45,8 @@ const draw_tilemap = (tilemap, camera = { x: 0, y: 0, width: 0, height: 0 }) => 
 // Get tile at pixel coordinates
 const get_tile = (tilemap, map_x, map_y) => {
     const tile_id = mget(map_x, map_y);
-    const flags = tilemap.tileset.flags[tile_id];
-    return create_tile(tile_id, flags);
+    const tile = tilemap.tileset.tiles[tile_id] || create_tile(tile_id);
+    return tile;
 }
 
 const create_tilemap = (x, y, width, height, tileset, remap = null) => ({

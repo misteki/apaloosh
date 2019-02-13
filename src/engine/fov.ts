@@ -173,7 +173,7 @@ const update_fov = (fov, map, pov_x, pov_y) => {
             place_map_flag(fov_map, x, y, true);
         },
         (x, y) => {
-            return get_tile(map, x, y).flags[TileFlags.OPAQUE];
+            return tile_has_flag(get_tile(map, x, y), [TileFlags.OPAQUE]);
         },
     );
     fov.visible_map = fov_map;

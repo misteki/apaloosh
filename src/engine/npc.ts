@@ -18,27 +18,33 @@ const step_npc = (npc, state) => {
     const direction = Math.floor(Math.random() * 5);
     const { map } = state;
     const { map_x, map_y } = npc;
+    let moved = false;
+    let move_coords = { x: 0, y: 0 };
     switch (direction) {
         case Direction.LEFT:
-            if (!get_tile(map, map_x - 1, map_y).flags[TileFlags.SOLID]) {
-                npc.map_x -= 1;
-            }
+            move_coords = { x: -1, y: 0 };
+            moved = true;
             break;
         case Direction.RIGHT:
-            if (!get_tile(map, map_x + 1, map_y).flags[TileFlags.SOLID]) {
-                npc.map_x += 1;
-            }
+            move_coords = { x: 1, y: 0 };
+            moved = true;
             break;
         case Direction.UP:
-            if (!get_tile(map, map_x, map_y - 1).flags[TileFlags.SOLID]) {
-                npc.map_y -= 1;
-            }
+            move_coords = { x: 0, y: -1 };
+            moved = true;
             break;
         case Direction.DOWN:
-            if (!get_tile(map, map_x, map_y + 1).flags[TileFlags.SOLID]) {
-                npc.map_y += 1;
-            }
+            move_coords = { x: 0, y: 1 };
+            moved = true;
             break;
+    }
+    if (moved) {
+        const target_coords = { x: npc.map_x + move_coords.x, y: npc.map_y + move_coords.y };
+        const target_tile = get_tile(map, target_coords.x, target_coords.y);
+        if (!tile_has_flag(target_tile, TileFlags.SOLID)) {
+            npc.map_x = npc.map_x + move_coords.x;
+            npc.map_y = npc.map_y + move_coords.y;
+        }
     }
     npc.stats.ap = npc.stats.ap - 1;
 }
