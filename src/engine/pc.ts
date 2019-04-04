@@ -67,8 +67,9 @@ const create_pc = (map_x, map_y) => {
         y: map_y * TILE_SIZE,
         map_x,
         map_y,
-        sprite: create_sprite(272),
+        sprite: create_sprite(272, { colorkey: 1 }),
         stats: { hp: 10, total_hp: 10, ap: 1, leftover_ap: 0, speed: 0 },
         movement: { direction: null, moving: false, speed: 40, target: { x: map_x, y: map_y } },
+        metadata: { name: "You", description: "Player character, yo!" }
     };
 }

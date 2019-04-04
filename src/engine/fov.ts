@@ -107,7 +107,6 @@ const light_shade = (light, arci, pt) => {
 
 /** Compute the field of view from (ox, oy) out to radius r. */
 const field_of_view = (ox, oy, r, x_limit, y_limit, visit, blocked) => {
-    const start_time = time();
     visit(ox, oy); // origin always visited.
 
     const quadrant = (dx, dy) => {

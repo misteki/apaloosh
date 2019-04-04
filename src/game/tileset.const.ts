@@ -16,6 +16,9 @@ const TILESET_DATA = {
         flags: [TileFlags.CLOSABLE],
         event_handlers: { [TileEvents.CLOSE]: (map_x, map_y) => { mset(map_x, map_y, 1) } }
     },
+    21: {
+        flags: [TileFlags.SOLID, TileFlags.OPAQUE]
+    },
     22: {
         flags: [TileFlags.SOLID, TileFlags.OPAQUE]
     },

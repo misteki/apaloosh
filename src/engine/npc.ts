@@ -1,11 +1,20 @@
-const create_npc = (map_x, map_y, sprite, stats = {}) => {
+const NPC_DEFAULT_STATS = { hp: 10, total_hp: 10, ap: 1, leftover_ap: 0, speed: 8 };
+const NPC_DEFAULT_METADATA = {
+    name: "Cheedo",
+    description: "A shadow of a man, covered by a colorful poncho"
+};
+
+const create_npc = (map_x, map_y, sprite, stats = null, metadata = null) => {
+    const actual_stats = { ...NPC_DEFAULT_STATS, ...stats };
+    const actual_metadata = { ...NPC_DEFAULT_METADATA, ...metadata };
     return {
         x: map_x * TILE_SIZE,
         y: map_y * TILE_SIZE,
         map_x,
         map_y,
         sprite,
-        stats: { hp: 10, total_hp: 10, ap: 1, leftover_ap: 0, speed: 8 },
+        stats: actual_stats,
+        metadata: actual_metadata,
     }
 }
 
@@ -17,7 +26,6 @@ const step_npc = (npc, state) => {
     //RANDOM MOV
     const direction = Math.floor(Math.random() * 5);
     const { map } = state;
-    const { map_x, map_y } = npc;
     let moved = false;
     let move_coords = { x: 0, y: 0 };
     switch (direction) {
